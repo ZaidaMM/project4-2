@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import Post, User
 
 
 def index(request):
@@ -61,3 +61,18 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+# *****************
+
+def compose(request):
+    # Compose new post
+    if request.method == "POST":
+        body = request.POST['compose-body']
+        user = User.objects.get(pk=request.user.id)
+        post = Post(body = body, author = user)
+        post.save()
+        
+        return HttpResponseRedirect(reverse('index'))
+    
+    else:
+        return JsonResponse({"error": "POST request required"}, status=400)

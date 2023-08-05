@@ -2,7 +2,12 @@
 <div class="container">
   <h2>ALL POSTS</h2>
   {% if user.is_authenticated %}
-  <form id="compose-form d-flex flex-column p-3">
+  <form
+    action="{% url 'compose' %}"
+    method="post"
+    id="compose-form"
+    class="d-flex flex-column p-3"
+  >
     {% csrf_token %}
     <div class="form-group d-flex flex-column">
       <label for="compose-body">NEW POST</label>
