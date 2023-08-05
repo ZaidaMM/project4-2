@@ -29,7 +29,9 @@
   <div id="all-posts">
     {% for post in page_obj %}
     <div class="card mb-2 p-3">
-      <h3>{{ post.author }}</h3>
+      <h3>
+        <a href="{% url 'profile' user_id=post.author.id %}">{{ post.author }}</a>
+      </h3>
       <p><i class="lh-1"></i>{{ post.body }}</p>
       <p class="text-secondary lh-1 small">{{ post.timestamp }}</p>
       <p class="text-secondary lh-1 small">Likes: XX (TODO)</p>
@@ -39,5 +41,5 @@
   <h3>No posts available</h3>
   {% endfor %}
   </div>
-  {% endblock %}
 </div>
+{% endblock %}
