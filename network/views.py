@@ -104,4 +104,22 @@ def profile(request, user_id):
         'posts': posts,
         'page_obj': page_obj,
         'username': user.username,
+        'profile_owner': user
+    })
+
+def following(request, user_id):
+    user = User.objects.get(pk=user_id)
+
+    # Filter posts by user
+    posts = Post.objects.all().order_by('id').reverse()  
+
+    # Pagination, show 10 posts per page
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "network/following.html", {
+        'posts': posts,
+        'page_obj': page_obj,
+        'username': user.username,
     })

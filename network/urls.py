@@ -10,5 +10,6 @@ urlpatterns = [
     path("register", views.register, name="register"),
     # ****************
     path('compose', views.compose, name="compose"),
-    path("profile/<int:user_id>", views.profile, name="profile")
+    path("profile/<int:user_id>", views.profile, name="profile"),
+    path("following/<int:user_id>", views.following, name='following')
 ]

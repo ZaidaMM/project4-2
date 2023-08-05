@@ -1,18 +1,11 @@
-{% extends "network/layout.html" %} {% load static %} {% block body %}
+{% extends "network/layout.html" %} {% block body %}
 
 <div class="container pt-2">
   <h2>{{ username }}</h2>
 
   <!-- Show follow/unfollow buttons -->
   <div id="follow-view">
-    <form id="following-status">
-      {% csrf_token %}
-      <div class="form-group">
-        {% if user != profile_owner %}
-        <input type="text" class="btn btn-primary btn-sm" value="FOLLOW" />
-        {% endif %}
-      </div>
-    </form>
+    <form id="following-status">{% csrf_token %}</form>
   </div>
 
   <!-- Show all posts -->
