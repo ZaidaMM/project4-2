@@ -11,5 +11,7 @@ urlpatterns = [
     # ****************
     path('compose', views.compose, name="compose"),
     path("profile/<int:user_id>", views.profile, name="profile"),
-    path("following/<int:user_id>", views.following, name='following')
+    path("following", views.following, name='following'),
+    path('follow', views.follow, name="follow"),
+    path('unfollow', views.unfollow, name="unfollow"),
 ]

@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
 
-from .models import Post, User
+from .models import Post, User, Follow
 
 
 def index(request):
@@ -89,37 +89,86 @@ def compose(request):
     else:
         return JsonResponse({"error": "POST request required"}, status=400)
     
+    
 def profile(request, user_id):
     user = User.objects.get(pk=user_id)
 
     # Filter posts by user
     posts = Post.objects.filter(author=user).order_by('id').reverse()
 
+    follower = Follow.objects.filter(follower=user)
+    following = Follow.objects.filter(following=user)
+
+
+    # isFollowing = False
+   
+    try:
+        # check = follower.filter(user=User.objects.get(pk=request.user.id))
+        if len(follower.filter(user=User.objects.get(pk=request.user.id))) == 0:
+            isFollowing = False
+        else:
+            isFollowing = False
+    
+    except:
+        isFollowing = False
+
     # Pagination, show 10 posts per page
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+
 
     return render(request, "network/profile.html", {
         'posts': posts,
         'page_obj': page_obj,
         'username': user.username,
-        'profile_owner': user
+        'profile_owner': user,
+        'isFollowing': isFollowing,
+        'following': following,
+        'follower': follower,
     })
 
-def following(request, user_id):
-    user = User.objects.get(pk=user_id)
+def following(request):
+    user = User.objects.get(pk=request.user.id)
+    followingUsers = Follow.objects.filter(follower=user)
 
     # Filter posts by user
     posts = Post.objects.all().order_by('id').reverse()  
 
+    follPosts = []
+
+    for post in posts:
+        for person in followingUsers:
+            if person.following == post.author:
+                follPosts.append(post)
+
     # Pagination, show 10 posts per page
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(follPosts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, "network/following.html", {
-        'posts': posts,
         'page_obj': page_obj,
-        'username': user.username,
+        'username': user,
     })
+
+def follow(request):
+    userUnfollow = request.POST['follow']
+    currentUser = User.objects.get(pk=request.user.id)
+    followerInput = User.objects.get(username=userUnfollow)
+    foll = Follow(follower=currentUser, following=followerInput)
+    foll.save()
+    user_id = followerInput.id
+
+    return HttpResponseRedirect(reverse(profile, kwargs={'user_id': user_id}))
+
+def unfollow(request):
+    userUnfollow = request.POST['unfollow']
+    currentUser = User.objects.get(pk=request.user.id)
+    followerInput = User.objects.get(username=userUnfollow)
+    foll = Follow.objects.get(follower=currentUser, following=followerInput)
+    foll.delete()
+    user_id = followerInput.id
+
+    return HttpResponseRedirect(reverse(profile, kwargs={'user_id': user_id}))

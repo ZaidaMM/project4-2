@@ -3,21 +3,40 @@
 <div class="container pt-2">
   <h2>{{ username }}</h2>
 
-  <!-- Show follow/unfollow buttons -->
-  <div id="follow-view">
-    <form id="following-status">
-      {% csrf_token %}
-      <div class="form-group">
-        {% if user != profile_owner %}
-        <input
-          type="text"
-          id="follow-btn"
-          class="btn btn-primary btn-sm"
-          value="FOLLOW"
-        />
-        {% endif %}
+  <!-- Show follow/likes stats -->
+  <div id="stats">
+    <div id="following-stats" class="d-flex">
+      <div class="col-2">
+        <p class="lead">Followers: {{ following.count }}</p>
       </div>
+      <div class="col-2">
+        <p class="lead">Following: {{ follower.count }}</p>
+      </div>
+    </div>
+
+    <div id="likes-stats">LIKES TODO</div>
+  </div>
+
+  <div id="follow-view">
+    {% if user.is_authenticated %} {{""}} {% if user != profile_owner %} {{""}}
+    {% if isFollowing %}
+
+    <form action="{% url 'follow' %}" method="post">
+      {% csrf_token %}
+      <!-- <div class="form-group"> -->
+      <input type="hidden" name="userfollow" value="{{ profile_owner }}" />
+      <input type="submit" class="btn btn-danger btn-sm" value="UNFOLLOW" />
+      <!-- </div> -->
     </form>
+    {% else %}
+    <form action="{% url 'unfollow' %}" method="post">
+      {% csrf_token %}
+      <!-- <div class="form-group"> -->
+      <input type="hidden" name="userfollow" value="{{ profile_owner }}" />
+      <input type="submit" class="btn btn-primary btn-sm" value="FOLLOW" />
+      <!-- </div> -->
+    </form>
+    {% endif %} {% endif %} {% endif %}
   </div>
 
   <!-- Show all posts -->
