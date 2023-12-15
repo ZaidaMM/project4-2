@@ -12,6 +12,8 @@ urlpatterns = [
     path('compose', views.compose, name="compose"),
     path("profile/<int:user_id>", views.profile, name="profile"),
     path("following", views.following, name='following'),
-    path('follow', views.follow, name="follow"),
-    path('unfollow', views.unfollow, name="unfollow"),
+    # path('follow', views.follow, name="follow"),
+    # path('unfollow', views.unfollow, name="unfollow"),
+    path("follow_unfollow/<str:query>/<str:user>",
+         views.follow_unfollow, name="follow_unfollow")
 ]

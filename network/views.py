@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
+import json
 
 from .models import Post, User, Follow
 
@@ -153,22 +154,45 @@ def following(request):
         'username': user,
     })
 
-def follow(request):
-    userUnfollow = request.POST['follow']
-    currentUser = User.objects.get(pk=request.user.id)
-    followerInput = User.objects.get(username=userUnfollow)
-    foll = Follow(follower=currentUser, following=followerInput)
-    foll.save()
-    user_id = followerInput.id
+# def follow(request):
+#     userfollow = request.POST['follow']
+#     currentUser = User.objects.get(pk=request.user.id)
+#     followerInput = User.objects.get(username=userfollow)
+#     foll = Follow(follower=currentUser, following=followerInput)
+#     foll.save()
+#     user_id = followerInput.id
 
-    return HttpResponseRedirect(reverse(profile, kwargs={'user_id': user_id}))
+#     return HttpResponseRedirect(reverse(profile, kwargs={'user_id': user_id}))
 
-def unfollow(request):
-    userUnfollow = request.POST['unfollow']
-    currentUser = User.objects.get(pk=request.user.id)
-    followerInput = User.objects.get(username=userUnfollow)
-    foll = Follow.objects.get(follower=currentUser, following=followerInput)
-    foll.delete()
-    user_id = followerInput.id
+# def unfollow(request):
+#     userfollow = request.POST['unfollow']
+#     currentUser = User.objects.get(pk=request.user.id)
+#     followerInput = User.objects.get(username=userfollow)
+#     foll = Follow.objects.get(follower=currentUser, following=followerInput)
+#     foll.delete()
+#     user_id = followerInput.id
 
-    return HttpResponseRedirect(reverse(profile, kwargs={'user_id': user_id}))
+#     return HttpResponseRedirect(reverse(profile, kwargs={'user_id': user_id}))
+
+def follow_unfollow(request, query, user):
+    user = User.objects.get(username=user)
+    user_who_wants = User.objects.get(id=request.user.id)
+    if request.user.username == user.username:
+        return JsonResponse({"message": "you cannot follow or unfollow yourself"}, status=201)
+    if query == "follow":
+        followers = user.follower.all()
+        for users in followers:
+            if users.follower.username == request.user.username:
+                return JsonResponse({"message": "you are already following this user"}, status=201)
+        f = Follower(follower=request.user, following=user)
+        f.save()
+        return JsonResponse({"message": "you are now following this user"}, status=201)
+
+    if query == "unfollow":
+        followers = user.follower.all()
+        for users in followers:
+            if users.follower.username == request.user.username:
+                f = Follower.objects.get(follower=request.user, following=user)
+                f.delete()
+                return JsonResponse({"message": "you unfollowed this user"}, status=201)
+        return JsonResponse({"message": "you have to follow this user to unfollow"}, status=201)

@@ -48,8 +48,7 @@
     </nav>
 
     <div class="body">{% block body %} {% endblock %}</div>
+    {% block script %} {% endblock %}
+    <script src="{% static 'network/index.js' %}"></script>
   </body>
 </html>
-{% block script %}
-<script src="{% static 'network/index.js' %}"></script>
-{% endblock %}
